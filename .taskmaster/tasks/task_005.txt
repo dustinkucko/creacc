@@ -1,0 +1,76 @@
+# Task ID: 5
+# Title: Projects Lifecycle Module
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implement project creation, metadata management, template application, and media upload orchestration atop git-data and lfs-data.
+# Details:
+- Files: `src/projects/{create.ts,metadata.ts,templates.ts,lifecycle.ts,index.ts}`.
+- `createProject(spaceId,name,options)`:
+  - Generate ULID; call `git-data.initRepository`; write `.yaml` config with repository_id (ULID), name, created_at, tags, description; commit initial tree.
+  - Optionally apply template structure from `templates.ts` (e.g., marketing campaign) by materializing folders/files and committing.
+- `uploadMedia(projectId, files)`:
+  - For each file: evaluate `lfs-data.policy.shouldTrack`; if true, upload to object storage via `issueUploadUrl` and commit pointer; else commit blob.
+- `updateMetadata(projectId, metadata)` updates `.yaml` with validation.
+- `lifecycle.ts` basic CRUD (rename project updates display name but preserves ULID); ensure ULID immutability.
+- Use identity normalization and case-collision detection on paths.
+
+# Test Strategy:
+- Integration: create project → verify repo exists and `.yaml` with correct ULID; apply template; upload media with >10MB triggers pointer; commit history reflects operations.
+- Unit: metadata validation, ULID immutability guard, template expansion rules.
+
+# Subtasks:
+## 1. Review PRD and architecture for lifecycle requirements [pending]
+### Dependencies: None
+### Description: Study prd.md and architecture.md to confirm lifecycle expectations and dependent modules.
+### Details:
+Identify identity, git-data, and lfs-data contracts plus metadata rules, noting open questions for later clarification.
+
+## 2. Draft lifecycle orchestration design doc [pending]
+### Dependencies: 5.1
+### Description: Outline how creation, metadata, templates, and uploads interact with git-data and lfs-data.
+### Details:
+Produce a sequence diagram or flow summary defining function responsibilities, error handling, and data validation checkpoints.
+
+## 3. Implement metadata validation utilities [pending]
+### Dependencies: 5.2
+### Description: Create validation logic for project .yaml metadata enforcing ULID immutability and schema.
+### Details:
+Define schema parser, normalization hooks, and guardrails so lifecycle.ts can reuse consistent validation routines.
+
+## 4. Build template application subsystem [pending]
+### Dependencies: 5.2
+### Description: Implement templates.ts to expand template descriptors into git commits with normalization checks.
+### Details:
+Support mapping template definitions to file trees, applying NFC normalization, case-collision detection, and commit staging helpers.
+
+## 5. Develop createProject workflow [pending]
+### Dependencies: 5.2, 5.3, 5.4
+### Description: Wire createProject to generate ULID, init repo, write metadata, and apply optional template.
+### Details:
+Integrate git-data.initRepository, metadata utilities, and template subsystem with transactional commit sequencing and rollback handling.
+
+## 6. Implement uploadMedia orchestration [pending]
+### Dependencies: 5.2, 5.4
+### Description: Handle media uploads with LFS policy evaluation, pointer commits, and Git blob commits.
+### Details:
+Loop through files, use lfs-data.policy.shouldTrack, issue upload URLs, commit pointers or blobs, and enforce normalization rules.
+
+## 7. Implement updateMetadata function [pending]
+### Dependencies: 5.3
+### Description: Update project metadata while validating schema and preserving ULID immutability.
+### Details:
+Read existing metadata, apply sanitized updates, run validation utilities, commit changes, and ensure missing fields remain intact.
+
+## 8. Complete lifecycle CRUD operations [pending]
+### Dependencies: 5.2, 5.3
+### Description: Finalize lifecycle.ts for rename, read, and delete behaviors respecting identity rules.
+### Details:
+Implement operations to fetch and mutate lifecycle state, enforce case collision prevention, and ensure ULID stability across renames.
+
+## 9. Author comprehensive test suite [pending]
+### Dependencies: 5.5, 5.6, 5.7, 5.8
+### Description: Create unit and integration tests spanning lifecycle workflows and identity constraints.
+### Details:
+Cover createProject, uploadMedia, metadata updates, templating, and edge cases like normalization conflicts and LFS policy enforcement.
+

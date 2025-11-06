@@ -1,0 +1,58 @@
+# Task ID: 7
+# Title: Lease Management (72h lifecycle, validation, eviction)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Provide exclusive access leases with 72h default, validation, expiration reminders, and admin eviction hooks.
+# Details:
+- Files: `src/lease-management/{lease.ts,expiration.ts,eviction.ts,scope.ts,index.ts}`.
+- `createLease(repoId,userId,baseCommit,scope,duration=72h)` validates base commit via git-data; generates ULID; writes to DB (Task 8) or temp JSONL index for dev; returns Lease.
+- `validateLease(leaseId,userId)` checks existence, ownership, status, remaining time; returns scope.
+- `scope.ts` sparse/full handling (Phase 1: full only, but implement structure for sparse later).
+- `checkExpiration()` scans leases and emits reminders 2h before expiry; expiration marks status.
+- `evictLease(leaseId,adminId,reason)` transitions status to evicted and records audit entry.
+- Prevent overlapping active leases on same repo for full scope.
+- Pseudo-code storage: write `leases.jsonl` under repo metadata dir with append-only writes; index by `lease_id`.
+
+# Test Strategy:
+- Unit: durations, reminder window logic, status transitions.
+- Integration: create lease against real repo head; validate; simulate time advance to expire; eviction path.
+- Concurrency: prevent two active leases for same repo when scope overlaps (simple full-scope exclusivity).
+
+# Subtasks:
+## 1. Define lease record schema and JSONL persistence helper [pending]
+### Dependencies: None
+### Description: Capture lease fields and persistence layout for the JSONL temp store.
+### Details:
+Document lease record shape, implement append-only writer and index loader for leases.jsonl under repo metadata, and outline transition hooks for future DB integration.
+
+## 2. Implement scope module with full-scope and exclusivity checks [pending]
+### Dependencies: 7.1
+### Description: Provide scope abstraction supporting current full-scope logic and exclusivity detection.
+### Details:
+Create scope.ts with types for full and future sparse scopes, encode normalization checks, and expose helper that detects overlapping active leases for full scope.
+
+## 3. Build createLease workflow with validations and persistence [pending]
+### Dependencies: 7.1, 7.2
+### Description: Implement createLease enforcing base commit validation, exclusivity, and persistence.
+### Details:
+Add createLease function that verifies repo/head via git-data, ensures no conflicting active leases, generates ULID, persists record to JSONL/index, and returns structured Lease object.
+
+## 4. Implement validateLease API and status checks [pending]
+### Dependencies: 7.1, 7.3
+### Description: Expose validateLease to confirm ownership, status, and remaining time.
+### Details:
+Develop validateLease to load lease by ID, verify user ownership, ensure active status and remaining duration, and return validated scope.
+
+## 5. Create expiration scanner and reminder scheduler [pending]
+### Dependencies: 7.1, 7.3, 7.4
+### Description: Handle time-based reminder emission and lease expiration transitions.
+### Details:
+Implement checkExpiration utility that scans stored leases, triggers reminder callbacks two hours before expiry, marks expired leases, and persists status changes atomically.
+
+## 6. Implement eviction workflow with audit logging hooks [pending]
+### Dependencies: 7.1, 7.3, 7.4
+### Description: Enable admin-triggered eviction and audit trail recording.
+### Details:
+Add evictLease to update lease status, record admin ID and reason, emit audit event hook, and persist mutation to JSONL store pending DB integration.
+

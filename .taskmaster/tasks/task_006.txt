@@ -1,0 +1,49 @@
+# Task ID: 6
+# Title: LFS Data Primitives (Pointer, Upload/Download, Policy)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implement Git LFS pointer generation/parsing, simple pre-signed URL issuance stubs, and server-side `.gitattributes` policy application for auto-tracking.
+# Details:
+- Files: `src/lfs-data/{pointer.ts,upload.ts,download.ts,locking.ts,policy.ts,index.ts}`.
+- `generatePointer(filePath, bytes, sha256, size)` returns pointer per spec: `version https://git-lfs.github.com/spec/v1\n oid sha256:<sha256>\n size <size>\n`.
+- `issueUploadUrl(repoId, oid, size, mime)` and `issueDownloadUrl(repoId, oid)` return signed URL data; in dev, return `file://` or local HTTP stub with expiry timestamps; later integrate with S3 SDK.
+- `policy.ts` holds list of extensions and size threshold >10MB triggering LFS tracking; function `shouldTrack(filePath,size,mime)`.
+- `locking.ts` stubs for LFS locks mapping to lease-management later; for now, maintain in-memory map with TODO to persist.
+- Ensure compatibility with object storage later via `@aws-sdk/client-s3` when network enabled.
+
+# Test Strategy:
+- Unit: pointer parse/serialize roundtrip; policy decisions for edge cases; URL issuance includes expiry and path components; locking prevents double-lock.
+- Integration: write pointer file and ensure Git treats it as text; verify `.gitattributes` generation for LFS patterns.
+
+# Subtasks:
+## 1. Implement Git LFS pointer serialization utilities [pending]
+### Dependencies: None
+### Description: Create pointer.ts with generate and parse helpers matching Git LFS spec.
+### Details:
+Build `generatePointer` and companion parser validating sha256, size, and file metadata while preserving canonical newline formatting.
+
+## 2. Stub upload URL issuance for LFS objects [pending]
+### Dependencies: None
+### Description: Add upload.ts with issueUploadUrl returning dev-friendly signed data.
+### Details:
+Generate deterministic `file://` or localhost URLs including repoId, oid, and expirations; structure payload for future S3 integration.
+
+## 3. Implement download URL generator for stored LFS blobs [pending]
+### Dependencies: None
+### Description: Create download.ts that serves signed URLs for retrieving objects.
+### Details:
+Mirror upload stub conventions, differentiating HTTP verb/intended use while preparing for object storage backends.
+
+## 4. Define LFS tracking policy and locking stubs [pending]
+### Dependencies: None
+### Description: Implement policy.ts and locking.ts per auto-track rules and in-memory locks.
+### Details:
+Encode extension list and size >10MB rule in `shouldTrack`; maintain simple in-memory lock map with clear TODO for persistence.
+
+## 5. Export modules and create consolidated unit test suite [pending]
+### Dependencies: 6.1, 6.2, 6.3, 6.4
+### Description: Update index.ts and add tests validating module interoperability.
+### Details:
+Wire exports through index.ts, ensure TypeScript types align, and author Jest tests that exercise pointer-policy interactions and URL contracts.
+

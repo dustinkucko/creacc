@@ -1,0 +1,90 @@
+# Task ID: 1
+# Title: Scaffold Monorepo Structure (TypeScript + Bun)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Initialize the repository with the prescribed module layout, TypeScript/Bun tooling, testing, linting, and scripts to support subsequent implementation phases.
+# Details:
+- Create directories per PRD structure under `creacc/src/*`, `tests/{unit,integration,e2e}`, `docs`, `scripts`.
+- Add `package.json` (Bun-compatible) with workspace scripts: `dev`, `build`, `test:unit`, `test:integration`, `test:e2e`, `lint`, `format`.
+- Configure `tsconfig.json` (ES2022 target, `moduleResolution: bundler`, `types: [vitest, bun-types]`).
+- Install dev deps: `typescript`, `vitest`, `@vitest/coverage-v8`, `playwright`, `@types/node`, `bun-types`, `@biomejs/biome`.
+- Add `biome.json` with formatting/lint defaults.
+- Create shared typing scaffolds `shared/{types.ts,config.ts,logger.ts,errors.ts,index.ts}` with minimal exports and TODOs.
+- Add `.editorconfig`, `.gitignore` (Bun, node_modules, build artifacts), and basic `README.md` linking to PRD.
+- Pseudo-code: 
+  - mkdir -p per tree; write boilerplate `index.ts` files exporting types and placeholders.
+- Scripts:
+  - `bun test` → vitest
+  - `bun run lint` → biome lint
+  - `bun run format` → biome format
+  - `bun run build` → `tsc -p tsconfig.json && esbuild` stub (esbuild later if bundling needed).
+
+# Test Strategy:
+- Run `vitest` to validate test harness loads.
+- Lint runs clean on scaffold.
+- TypeScript compiles with no errors.
+- CI-style check script runs all: lint, typecheck, unit tests.
+
+# Subtasks:
+## 1. Review PRD and architecture specs for scaffold requirements [pending]
+### Dependencies: None
+### Description: Read all primary specification documents to confirm required directories, configs, and tooling.
+### Details:
+Review all specification sources:
+- `prd-rpg.md` - RPG-structured PRD with functional/structural decomposition
+- `prd.md` - Comprehensive original PRD with detailed requirements
+- `architecture.md` - Infrastructure design and deployment model
+- `openspec/project.md` - Project context, tech stack, conventions, and constraints
+
+Extract from these documents:
+- Exact monorepo directory structure (src/, tests/, docs/, scripts/)
+- Required tooling (TypeScript, Bun, Vitest, Biome, Playwright, Vite, TanStack)
+- Build script specifications (dev, build, test:*, lint, format, check)
+- Configuration file requirements (tsconfig.json, biome.json, .editorconfig, .gitignore, vite.config.ts)
+- Testing strategy expectations (unit with Vitest, integration, e2e with Playwright)
+- CI/CD workflow requirements
+- Code style conventions (2-space indentation, 100-column wrap, strict TypeScript)
+- Frontend patterns (React + TanStack, shadcn/ui, Tailwind CSS)
+- Git workflow (trunk-based, conventional commits, protected main)
+
+Create a checklist of all artifacts needed for subtasks 1.2-1.7 to ensure complete alignment.
+
+## 2. Create monorepo directory skeleton under src/tests/docs/scripts [pending]
+### Dependencies: 1.1
+### Description: Lay down folders aligned to PRD structure for source, tests, docs, and scripts.
+### Details:
+Use filesystem operations to create `creacc/src/...`, `tests/{unit,integration,e2e}`, `docs`, `scripts`, and placeholder index files so later steps can populate them.
+
+## 3. Initialize Bun-compatible workspace package.json and dependencies [pending]
+### Dependencies: 1.2
+### Description: Set up package manifest, scripts, and install required dev dependencies.
+### Details:
+Author `package.json` with Bun workspaces, add scripts (`dev`, `build`, `test:*`, `lint`, `format`), and install TypeScript, Vitest, Playwright, Biome, bun types, and other dev tooling.
+
+## 4. Configure TypeScript compilation settings [pending]
+### Dependencies: 1.3
+### Description: Create tsconfig with ES2022 target and bundler module resolution.
+### Details:
+Write `tsconfig.json` setting target/module, include shared typing paths, add `types: ["vitest", "bun-types"]`, and ensure paths/globs cover workspace directories.
+
+## 5. Set up linting, formatting, and repository defaults [pending]
+### Dependencies: 1.3
+### Description: Add Biome config plus supporting editor and ignore files.
+### Details:
+Create `biome.json` with lint/format defaults, add `.editorconfig`, `.gitignore` tuned for Bun/node artifacts, and ensure scripts call Biome commands correctly.
+
+## 6. Stub shared modules and initial documentation placeholders [pending]
+### Dependencies: 1.2, 1.4, 1.5
+### Description: Provide shared typing files and README referencing PRD.
+### Details:
+Add `shared/{types.ts,config.ts,logger.ts,errors.ts,index.ts}` with minimal exports/TODOs, create placeholder test entry points, and write a README linking back to PRD.
+
+## 7. Configure CI/CD with GitHub Actions workflow [pending]
+### Dependencies: 1.3, 1.4, 1.5
+### Description: Create GitHub Actions workflow for automated testing and validation on PRs. Maps to OpenSpec Tooling Requirement 7: CI/CD Configuration.
+### Details:
+<info added on 2025-11-05T19:44:41.940Z>
+I’m going to scan the repo structure and search for existing CI config, package scripts, tsconfig, and lint setup to tailor the workflow details precisely.
+</info added on 2025-11-05T19:44:41.940Z>
+

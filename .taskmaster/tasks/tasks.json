@@ -1,0 +1,967 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Scaffold Monorepo Structure (TypeScript + Bun)",
+        "description": "Initialize the repository with the prescribed module layout, TypeScript/Bun tooling, testing, linting, and scripts to support subsequent implementation phases.",
+        "details": "- Create directories per PRD structure under `creacc/src/*`, `tests/{unit,integration,e2e}`, `docs`, `scripts`.\n- Add `package.json` (Bun-compatible) with workspace scripts: `dev`, `build`, `test:unit`, `test:integration`, `test:e2e`, `lint`, `format`.\n- Configure `tsconfig.json` (ES2022 target, `moduleResolution: bundler`, `types: [vitest, bun-types]`).\n- Install dev deps: `typescript`, `vitest`, `@vitest/coverage-v8`, `playwright`, `@types/node`, `bun-types`, `@biomejs/biome`.\n- Add `biome.json` with formatting/lint defaults.\n- Create shared typing scaffolds `shared/{types.ts,config.ts,logger.ts,errors.ts,index.ts}` with minimal exports and TODOs.\n- Add `.editorconfig`, `.gitignore` (Bun, node_modules, build artifacts), and basic `README.md` linking to PRD.\n- Pseudo-code: \n  - mkdir -p per tree; write boilerplate `index.ts` files exporting types and placeholders.\n- Scripts:\n  - `bun test` → vitest\n  - `bun run lint` → biome lint\n  - `bun run format` → biome format\n  - `bun run build` → `tsc -p tsconfig.json && esbuild` stub (esbuild later if bundling needed).",
+        "testStrategy": "- Run `vitest` to validate test harness loads.\n- Lint runs clean on scaffold.\n- TypeScript compiles with no errors.\n- CI-style check script runs all: lint, typecheck, unit tests.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Review PRD and architecture specs for scaffold requirements",
+            "description": "Read all primary specification documents to confirm required directories, configs, and tooling.",
+            "dependencies": [],
+            "details": "Review all specification sources:\n- `prd-rpg.md` - RPG-structured PRD with functional/structural decomposition\n- `prd.md` - Comprehensive original PRD with detailed requirements\n- `architecture.md` - Infrastructure design and deployment model\n- `openspec/project.md` - Project context, tech stack, conventions, and constraints\n\nExtract from these documents:\n- Exact monorepo directory structure (src/, tests/, docs/, scripts/)\n- Required tooling (TypeScript, Bun, Vitest, Biome, Playwright, Vite, TanStack)\n- Build script specifications (dev, build, test:*, lint, format, check)\n- Configuration file requirements (tsconfig.json, biome.json, .editorconfig, .gitignore, vite.config.ts)\n- Testing strategy expectations (unit with Vitest, integration, e2e with Playwright)\n- CI/CD workflow requirements\n- Code style conventions (2-space indentation, 100-column wrap, strict TypeScript)\n- Frontend patterns (React + TanStack, shadcn/ui, Tailwind CSS)\n- Git workflow (trunk-based, conventional commits, protected main)\n\nCreate a checklist of all artifacts needed for subtasks 1.2-1.7 to ensure complete alignment.",
+            "status": "pending",
+            "testStrategy": "Maintain a checklist of required artifacts extracted from all specification documents and confirm all items are accounted for in subsequent subtasks."
+          },
+          {
+            "id": 2,
+            "title": "Create monorepo directory skeleton under src/tests/docs/scripts",
+            "description": "Lay down folders aligned to PRD structure for source, tests, docs, and scripts.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use filesystem operations to create `creacc/src/...`, `tests/{unit,integration,e2e}`, `docs`, `scripts`, and placeholder index files so later steps can populate them.",
+            "status": "pending",
+            "testStrategy": "List directory tree and confirm paths match the agreed structure."
+          },
+          {
+            "id": 3,
+            "title": "Initialize Bun-compatible workspace package.json and dependencies",
+            "description": "Set up package manifest, scripts, and install required dev dependencies.",
+            "dependencies": [
+              2
+            ],
+            "details": "Author `package.json` with Bun workspaces, add scripts (`dev`, `build`, `test:*`, `lint`, `format`), and install TypeScript, Vitest, Playwright, Biome, bun types, and other dev tooling.",
+            "status": "pending",
+            "testStrategy": "Run `bun install` dry-run or check lockfile to ensure dependencies resolve and scripts exist."
+          },
+          {
+            "id": 4,
+            "title": "Configure TypeScript compilation settings",
+            "description": "Create tsconfig with ES2022 target and bundler module resolution.",
+            "dependencies": [
+              3
+            ],
+            "details": "Write `tsconfig.json` setting target/module, include shared typing paths, add `types: [\"vitest\", \"bun-types\"]`, and ensure paths/globs cover workspace directories.",
+            "status": "pending",
+            "testStrategy": "Execute `bun run build` to confirm `tsc -p tsconfig.json` accepts the configuration."
+          },
+          {
+            "id": 5,
+            "title": "Set up linting, formatting, and repository defaults",
+            "description": "Add Biome config plus supporting editor and ignore files.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create `biome.json` with lint/format defaults, add `.editorconfig`, `.gitignore` tuned for Bun/node artifacts, and ensure scripts call Biome commands correctly.",
+            "status": "pending",
+            "testStrategy": "Run `bun run lint` and `bun run format --check` to verify Biome picks up configuration."
+          },
+          {
+            "id": 6,
+            "title": "Stub shared modules and initial documentation placeholders",
+            "description": "Provide shared typing files and README referencing PRD.",
+            "dependencies": [
+              2,
+              4,
+              5
+            ],
+            "details": "Add `shared/{types.ts,config.ts,logger.ts,errors.ts,index.ts}` with minimal exports/TODOs, create placeholder test entry points, and write a README linking back to PRD.",
+            "status": "pending",
+            "testStrategy": "Run TypeScript build and lint to confirm new stubs compile cleanly and satisfy tooling expectations."
+          },
+          {
+            "id": 7,
+            "title": "Configure CI/CD with GitHub Actions workflow",
+            "description": "Create GitHub Actions workflow for automated testing and validation on PRs. Maps to OpenSpec Tooling Requirement 7: CI/CD Configuration.",
+            "details": "<info added on 2025-11-05T19:44:41.940Z>\nI’m going to scan the repo structure and search for existing CI config, package scripts, tsconfig, and lint setup to tailor the workflow details precisely.\n</info added on 2025-11-05T19:44:41.940Z>",
+            "status": "pending",
+            "dependencies": [
+              "1.3",
+              "1.4",
+              "1.5"
+            ],
+            "parentTaskId": 1
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Identity Primitives (Dual OID, ULID, Path Normalization)",
+        "description": "Provide canonical identity utilities including dual SHA-1/SHA-256 computation, ULID generation/validation, Unicode NFC normalization, and case-collision detection.",
+        "details": "- Files: `src/identity/{hashing.ts,ulid.ts,normalization.ts,case-collision.ts,yaml-validation.ts,index.ts}`.\n- `computeDualOid(type,size,content)` builds canonical git object header `${type} ${size}\\0` and hashes using Node/Bun `crypto.createHash('sha1'|'sha256')` over header+content.\n- `generateUlid(ts?)` using `ulid` lib; validators for ULID (26 chars Crockford base32) and UUID v7 if later.\n- `normalizePath(p)` using `Intl`/`String.prototype.normalize('NFC')`; detect changes.\n- `detectCaseCollision(tree,newPath)` tree = Set of existing normalized casefolded paths (use `toLocaleLowerCase('en-US')`); return conflicting path if any.\n- `validateYaml(yaml)` using `yaml` lib; return parsed + schema placeholders.\n- Export all via `index.ts`.\n- Pseudo-code hashing:\n  - `const header = Buffer.from(type + ' ' + size + '\\0','utf8');`\n  - `const buf = Buffer.concat([header, contentBuf]);`\n  - return { sha1: sha1(buf), sha256: sha256(buf) }",
+        "testStrategy": "- Unit tests: known vectors from Git docs: hash small blob 'hello\\n' matches both SHA-1 and SHA-256 when wrapped in git header; normalization cases (NFD→NFC) and case-collision detection; ULID format validation; YAML parse/invalid cases.\n- Cross-check against `git hash-object --stdin -t blob` for SHA-1 in integration.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Establish identity module structure",
+            "description": "Review specs and create initial identity utility file skeletons with shared types.",
+            "dependencies": [],
+            "details": "Confirm required files under src/identity, define shared interfaces, and document expected exports to align with architecture guidance.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Implement dual Git OID hashing utility",
+            "description": "Build computeDualOid to construct git headers and output SHA-1 and SHA-256 hashes.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use Node crypto hashes over header+content buffers, validate inputs, and ensure outputs match canonical git formatting requirements.",
+            "status": "pending",
+            "testStrategy": "Prepare fixtures like blob 'hello\\n' and compare function output to git hash-object results."
+          },
+          {
+            "id": 3,
+            "title": "Add ULID generation and validation helpers",
+            "description": "Introduce helpers to create and verify ULIDs per product conventions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Leverage ulid library, expose optional timestamp parameter, implement regex validation, and provide clear error reporting for invalid identifiers.",
+            "status": "pending",
+            "testStrategy": "Unit-test generation uniqueness and validation acceptance/rejection of known good and bad ULID strings."
+          },
+          {
+            "id": 4,
+            "title": "Implement path normalization and case collision checks",
+            "description": "Provide NFC normalization and case-insensitive collision detection utilities.",
+            "dependencies": [
+              1
+            ],
+            "details": "Normalize paths via String.normalize('NFC'), expose change detection flag, and compare locale-lowered paths against existing tree set to surface conflicts.",
+            "status": "pending",
+            "testStrategy": "Craft unicode sample inputs covering NFD to NFC normalization and ensure collisions are detected while distinct paths pass."
+          },
+          {
+            "id": 5,
+            "title": "Create YAML validation helper",
+            "description": "Parse YAML configurations and return typed results with placeholder schema checks.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use yaml library to parse input, wrap errors with context, and set up structure for future schema validation hooks.",
+            "status": "pending",
+            "testStrategy": "Test successful parse of minimal config and failure cases with malformed YAML strings."
+          },
+          {
+            "id": 6,
+            "title": "Wire exports and author comprehensive tests",
+            "description": "Aggregate identity utilities in index.ts and add unit tests covering all behaviors.",
+            "dependencies": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Export modules via index.ts, implement full test suite referencing documented vectors, and ensure shared fixtures verify interactions across utilities.",
+            "status": "pending",
+            "testStrategy": "Use project test runner to execute new identity tests covering hashing, ULID, normalization, collisions, and YAML parsing."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Storage Abstraction Layer",
+        "description": "Create a pluggable storage adapter interface and a local filesystem implementation to support POSIX-correct git repo I/O in dev/test.",
+        "details": "- Files: `src/storage/{interface.ts,local.ts,block-volume.ts,network-fs.ts,index.ts}`.\n- Define `StorageAdapter` with methods: `readFile, writeFile, mkdirp, stat, exists, readdir, unlink, rename, lock(path, fn), fsync(path)` using Promises.\n- Implement `local.ts` using `fs/promises` and `flock`-like advisory locking via `proper-lockfile` or simple lockfiles under `.locks` as placeholder; ensure atomic writes: write temp file + `rename`.\n- Provide base paths config (e.g., `/srv/git` for repos, `/var/tmp/creacc` for worktrees in dev).\n- Index exports `createStorageAdapter(config)` returning the appropriate impl; stubs for `block-volume` and `network-fs` with TODOs but compliant interfaces.\n- Ensure Unicode NFC normalization on all path inputs using identity.normalizePath before filesystem ops.",
+        "testStrategy": "- Unit tests: mock temp directory, verify atomic write then rename; lock executes critical section exclusively; NFC normalization applied; mkdirp idempotency.\n- Integration: write/read binary round trip; concurrent lock contention with timing asserts.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Review storage requirements and existing identity utilities",
+            "description": "Read PRD, architecture, and identity modules to capture storage adapter expectations.",
+            "dependencies": [],
+            "details": "Inspect docs and current identity helpers to ensure StorageAdapter design matches normalization and POSIX semantics.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Define StorageAdapter TypeScript interface",
+            "description": "Author interface.ts with required async methods and shared types.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create interface signature covering read/write, locking, fsync, and error semantics plus exported types for stat metadata.",
+            "status": "pending",
+            "testStrategy": "Type-check interface usage in a stub implementation to confirm compilation."
+          },
+          {
+            "id": 3,
+            "title": "Add path normalization wrapper utilities",
+            "description": "Integrate NFC normalization before filesystem access.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Import identity.normalizePath, wrap adapter paths, and propagate normalized values consistently across all operations.",
+            "status": "pending",
+            "testStrategy": "Write unit tests asserting inputs in NFD normalize to NFC prior to hitting fs APIs."
+          },
+          {
+            "id": 4,
+            "title": "Implement local filesystem adapter with atomic writes and locking",
+            "description": "Build local.ts using fs/promises with atomic rename and advisory locks.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Use temp-file write+rename for writeFile, manage lockfiles under .locks, ensure mkdirp/stat semantics, and call fsync when required.",
+            "status": "pending",
+            "testStrategy": "Add integration tests simulating concurrent writers asserting exclusive lock and verifying atomic file contents."
+          },
+          {
+            "id": 5,
+            "title": "Create block-volume and network-fs adapter stubs",
+            "description": "Provide placeholder modules matching the interface with TODO guidance.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement compliant classes exporting unimplemented methods that throw TODO errors, documenting future storage-specific behavior.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 6,
+            "title": "Implement storage adapter factory in index.ts",
+            "description": "Wire createStorageAdapter to return implementations per config.",
+            "dependencies": [
+              4,
+              5
+            ],
+            "details": "Parse adapter config, construct local adapter with base paths, and expose stubs for other types while validating options.",
+            "status": "pending",
+            "testStrategy": "Add unit test verifying factory returns LocalStorageAdapter when type=local and rejects unknown adapters."
+          },
+          {
+            "id": 7,
+            "title": "Draft unit and integration test scaffolding",
+            "description": "Set up test files covering adapter behaviors and concurrency cases.",
+            "dependencies": [
+              4,
+              6
+            ],
+            "details": "Create test suites for normalization, atomic writes, locking, and factory selection, including helper fixtures for temporary directories.",
+            "status": "pending",
+            "testStrategy": "Implement tests using temporary directories and mocked timers to assert lock contention handling."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Git Data Core (Repository, Objects, Refs, Worktree)",
+        "description": "Implement minimal Git plumbing to init bare repositories, store git objects with dual hashes, manage refs/reflogs, and create ephemeral worktrees.",
+        "details": "- Files: `src/git-data/{repository.ts,objects.ts,refs.ts,worktree.ts,validation.ts,index.ts}`.\n- Prefer native `git` CLI for canonical behavior in integration; wrap with Bun `spawn` or `execa` when needed; for unit-level hashing use identity.computeDualOid.\n- `initRepository(spaceId, repoName, repoConfig)`:\n  - Create directory `/srv/git/<space>/<ulid>.git` (bare) using storage adapter.\n  - Run `git init --bare --object-format=sha1` for repo; record config to support SHA-256 transition and `extensions.objectFormat` for dual-hash validation (store both via our index).\n  - Write default branch `main`.\n- `storeObject(type,content)`:\n  - Compute dual OIDs; for canonical storage use `git hash-object -w -t <type>` for sha1; store sha256 in side-index DB/file under `objects/sha256-index` mapping sha1↔sha256.\n- `updateRef(refName, oldOid, newOid, committer)`:\n  - Use `git update-ref` with `oldOid` optimistic concurrency; append reflog entry.\n- `createWorktree(repoPath, baseCommit, scope)`:\n  - Create temp working dir, run `git --git-dir=<repo>.git worktree add --detach <path> <baseCommit>`.\n- `validation.ts`:\n  - Helpers wrapping `git fsck`, object format checks, ensure dual-oid index consistency.\n- Index exports functions.\n- Pseudo-code for storeObject: compute dual → write via CLI → persist `ObjectMetadata` record in a local JSONL index for now (until DB task).",
+        "testStrategy": "- Integration: init repo, assert bare repo exists; `git fsck` clean; store blob/tree/commit and verify oids; update ref with correct oldOid success and wrong oldOid fails; create worktree and confirm HEAD at base.\n- Unit: object header construction edge cases.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Review Git data requirements and storage contracts",
+            "description": "Read AGENTS.md, PRD §11-14, architecture.md, and storage adapter APIs to confirm Git data expectations.",
+            "dependencies": [],
+            "details": "Collect authoritative requirements on dual hashes, storage layout, NFC enforcement, and CLI usage to drive implementation choices.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Design git-data module structure and shared utilities",
+            "description": "Sketch module responsibilities, input/output types, and shared utilities across repository, objects, refs, worktree, and validation files.",
+            "dependencies": [
+              1
+            ],
+            "details": "Define TypeScript interfaces, storage adapter hooks, error enums, logging strategy, and cross-module helpers prior to coding implementations.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 3,
+            "title": "Implement initRepository with dual-hash aware config",
+            "description": "Create repository.ts logic to provision bare repos under /srv/git/<space>/<ulid>.git via storage adapter and configure dual-hash support.",
+            "dependencies": [
+              2
+            ],
+            "details": "Invoke git init --bare, enforce main branch default, persist repo metadata, and prep future SHA-256 transition settings in index exports.",
+            "status": "pending",
+            "testStrategy": "Integration: run initRepository, assert repo directory exists, git status clean, main ref present."
+          },
+          {
+            "id": 4,
+            "title": "Build storeObject with dual OID persistence",
+            "description": "Implement objects.ts storeObject using computeDualOid, git hash-object, and sidecar JSONL index for sha1↔sha256 mapping.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Handle supported object types, ensure atomic writes, maintain ObjectMetadata records, and expose retrieval helpers for later features.",
+            "status": "pending",
+            "testStrategy": "Integration: write blob/tree/commit, verify stored sha1 via git cat-file and sha256 index entry consistency."
+          },
+          {
+            "id": 5,
+            "title": "Implement ref updates and reflog handling",
+            "description": "Add updateRef and supporting utilities in refs.ts to enforce optimistic concurrency and append reflog entries with committer info.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Wrap git update-ref, manage oldOid checks, format reflog messages, and surface errors for mismatched OIDs or missing refs.",
+            "status": "pending",
+            "testStrategy": "Integration: update main ref successfully, attempt wrong oldOid and confirm rejection, inspect reflog entry."
+          },
+          {
+            "id": 6,
+            "title": "Create ephemeral worktree management",
+            "description": "Develop worktree.ts to create and clean up detached worktrees for check-out flows based on base commits and scope.",
+            "dependencies": [
+              3,
+              4,
+              5
+            ],
+            "details": "Generate temp directories, call git worktree add --detach, record metadata for later cleanup, and ensure compatibility with storage rules.",
+            "status": "pending",
+            "testStrategy": "Integration: create worktree, confirm HEAD matches base commit, ensure cleanup removes directory."
+          },
+          {
+            "id": 7,
+            "title": "Add validation helpers for repositories and objects",
+            "description": "Implement validation.ts to wrap git fsck, verify object formats, and cross-check dual-hash index integrity.",
+            "dependencies": [
+              4,
+              5,
+              6
+            ],
+            "details": "Provide functions for health checks, index reconciliation, and reporting detailed validation results for auditing pipelines.",
+            "status": "pending",
+            "testStrategy": "Integration: run validation on initialized repo with stored objects, confirm fsck clean and dual index alignment."
+          },
+          {
+            "id": 8,
+            "title": "Wire index exports and author tests",
+            "description": "Finalize index.ts exports and create comprehensive unit/integration tests covering repository, objects, refs, worktree, and validation paths.",
+            "dependencies": [
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "details": "Ensure modules export planned APIs, add unit tests for hashing edge cases, and script integration suites invoking git CLI behaviors.",
+            "status": "pending",
+            "testStrategy": "Combination: unit tests for computeDualOid headers and error paths; integration tests executing full git-data workflows."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Projects Lifecycle Module",
+        "description": "Implement project creation, metadata management, template application, and media upload orchestration atop git-data and lfs-data.",
+        "details": "- Files: `src/projects/{create.ts,metadata.ts,templates.ts,lifecycle.ts,index.ts}`.\n- `createProject(spaceId,name,options)`:\n  - Generate ULID; call `git-data.initRepository`; write `.yaml` config with repository_id (ULID), name, created_at, tags, description; commit initial tree.\n  - Optionally apply template structure from `templates.ts` (e.g., marketing campaign) by materializing folders/files and committing.\n- `uploadMedia(projectId, files)`:\n  - For each file: evaluate `lfs-data.policy.shouldTrack`; if true, upload to object storage via `issueUploadUrl` and commit pointer; else commit blob.\n- `updateMetadata(projectId, metadata)` updates `.yaml` with validation.\n- `lifecycle.ts` basic CRUD (rename project updates display name but preserves ULID); ensure ULID immutability.\n- Use identity normalization and case-collision detection on paths.",
+        "testStrategy": "- Integration: create project → verify repo exists and `.yaml` with correct ULID; apply template; upload media with >10MB triggers pointer; commit history reflects operations.\n- Unit: metadata validation, ULID immutability guard, template expansion rules.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Review PRD and architecture for lifecycle requirements",
+            "description": "Study prd.md and architecture.md to confirm lifecycle expectations and dependent modules.",
+            "dependencies": [],
+            "details": "Identify identity, git-data, and lfs-data contracts plus metadata rules, noting open questions for later clarification.",
+            "status": "pending",
+            "testStrategy": "No tests; research task only."
+          },
+          {
+            "id": 2,
+            "title": "Draft lifecycle orchestration design doc",
+            "description": "Outline how creation, metadata, templates, and uploads interact with git-data and lfs-data.",
+            "dependencies": [
+              1
+            ],
+            "details": "Produce a sequence diagram or flow summary defining function responsibilities, error handling, and data validation checkpoints.",
+            "status": "pending",
+            "testStrategy": "Peer review of design for completeness."
+          },
+          {
+            "id": 3,
+            "title": "Implement metadata validation utilities",
+            "description": "Create validation logic for project .yaml metadata enforcing ULID immutability and schema.",
+            "dependencies": [
+              2
+            ],
+            "details": "Define schema parser, normalization hooks, and guardrails so lifecycle.ts can reuse consistent validation routines.",
+            "status": "pending",
+            "testStrategy": "Unit tests covering valid/invalid metadata scenarios and ULID immutability."
+          },
+          {
+            "id": 4,
+            "title": "Build template application subsystem",
+            "description": "Implement templates.ts to expand template descriptors into git commits with normalization checks.",
+            "dependencies": [
+              2
+            ],
+            "details": "Support mapping template definitions to file trees, applying NFC normalization, case-collision detection, and commit staging helpers.",
+            "status": "pending",
+            "testStrategy": "Unit tests for template expansion, normalization rejection, and commit staging behavior."
+          },
+          {
+            "id": 5,
+            "title": "Develop createProject workflow",
+            "description": "Wire createProject to generate ULID, init repo, write metadata, and apply optional template.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Integrate git-data.initRepository, metadata utilities, and template subsystem with transactional commit sequencing and rollback handling.",
+            "status": "pending",
+            "testStrategy": "Integration tests verifying repository creation, metadata commit, and template application outcomes."
+          },
+          {
+            "id": 6,
+            "title": "Implement uploadMedia orchestration",
+            "description": "Handle media uploads with LFS policy evaluation, pointer commits, and Git blob commits.",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Loop through files, use lfs-data.policy.shouldTrack, issue upload URLs, commit pointers or blobs, and enforce normalization rules.",
+            "status": "pending",
+            "testStrategy": "Integration tests covering LFS-tracked vs non-tracked files and commit history validation."
+          },
+          {
+            "id": 7,
+            "title": "Implement updateMetadata function",
+            "description": "Update project metadata while validating schema and preserving ULID immutability.",
+            "dependencies": [
+              3
+            ],
+            "details": "Read existing metadata, apply sanitized updates, run validation utilities, commit changes, and ensure missing fields remain intact.",
+            "status": "pending",
+            "testStrategy": "Unit tests exercising valid updates, rejection of ULID changes, and normalization handling."
+          },
+          {
+            "id": 8,
+            "title": "Complete lifecycle CRUD operations",
+            "description": "Finalize lifecycle.ts for rename, read, and delete behaviors respecting identity rules.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement operations to fetch and mutate lifecycle state, enforce case collision prevention, and ensure ULID stability across renames.",
+            "status": "pending",
+            "testStrategy": "Unit tests for rename preserving ULID and rejection of conflicting names."
+          },
+          {
+            "id": 9,
+            "title": "Author comprehensive test suite",
+            "description": "Create unit and integration tests spanning lifecycle workflows and identity constraints.",
+            "dependencies": [
+              5,
+              6,
+              7,
+              8
+            ],
+            "details": "Cover createProject, uploadMedia, metadata updates, templating, and edge cases like normalization conflicts and LFS policy enforcement.",
+            "status": "pending",
+            "testStrategy": "Combine Jest unit suites with integration harness simulating git-data and lfs-data interactions."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "LFS Data Primitives (Pointer, Upload/Download, Policy)",
+        "description": "Implement Git LFS pointer generation/parsing, simple pre-signed URL issuance stubs, and server-side `.gitattributes` policy application for auto-tracking.",
+        "details": "- Files: `src/lfs-data/{pointer.ts,upload.ts,download.ts,locking.ts,policy.ts,index.ts}`.\n- `generatePointer(filePath, bytes, sha256, size)` returns pointer per spec: `version https://git-lfs.github.com/spec/v1\\n oid sha256:<sha256>\\n size <size>\\n`.\n- `issueUploadUrl(repoId, oid, size, mime)` and `issueDownloadUrl(repoId, oid)` return signed URL data; in dev, return `file://` or local HTTP stub with expiry timestamps; later integrate with S3 SDK.\n- `policy.ts` holds list of extensions and size threshold >10MB triggering LFS tracking; function `shouldTrack(filePath,size,mime)`.\n- `locking.ts` stubs for LFS locks mapping to lease-management later; for now, maintain in-memory map with TODO to persist.\n- Ensure compatibility with object storage later via `@aws-sdk/client-s3` when network enabled.",
+        "testStrategy": "- Unit: pointer parse/serialize roundtrip; policy decisions for edge cases; URL issuance includes expiry and path components; locking prevents double-lock.\n- Integration: write pointer file and ensure Git treats it as text; verify `.gitattributes` generation for LFS patterns.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Git LFS pointer serialization utilities",
+            "description": "Create pointer.ts with generate and parse helpers matching Git LFS spec.",
+            "dependencies": [],
+            "details": "Build `generatePointer` and companion parser validating sha256, size, and file metadata while preserving canonical newline formatting.",
+            "status": "pending",
+            "testStrategy": "Add unit tests covering round-trip serialization and malformed inputs."
+          },
+          {
+            "id": 2,
+            "title": "Stub upload URL issuance for LFS objects",
+            "description": "Add upload.ts with issueUploadUrl returning dev-friendly signed data.",
+            "dependencies": [],
+            "details": "Generate deterministic `file://` or localhost URLs including repoId, oid, and expirations; structure payload for future S3 integration.",
+            "status": "pending",
+            "testStrategy": "Mock clock to assert expiry fields and ensure path embeds repo and oid."
+          },
+          {
+            "id": 3,
+            "title": "Implement download URL generator for stored LFS blobs",
+            "description": "Create download.ts that serves signed URLs for retrieving objects.",
+            "dependencies": [],
+            "details": "Mirror upload stub conventions, differentiating HTTP verb/intended use while preparing for object storage backends.",
+            "status": "pending",
+            "testStrategy": "Verify URLs include repo and oid, expiry present, and schema matches upload variant."
+          },
+          {
+            "id": 4,
+            "title": "Define LFS tracking policy and locking stubs",
+            "description": "Implement policy.ts and locking.ts per auto-track rules and in-memory locks.",
+            "dependencies": [],
+            "details": "Encode extension list and size >10MB rule in `shouldTrack`; maintain simple in-memory lock map with clear TODO for persistence.",
+            "status": "pending",
+            "testStrategy": "Test policy decisions across size, extension, and mime cases; confirm locking prevents duplicate acquisitions."
+          },
+          {
+            "id": 5,
+            "title": "Export modules and create consolidated unit test suite",
+            "description": "Update index.ts and add tests validating module interoperability.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Wire exports through index.ts, ensure TypeScript types align, and author Jest tests that exercise pointer-policy interactions and URL contracts.",
+            "status": "pending",
+            "testStrategy": "Run unit tests covering exports, pointer-policy integration, and upload/download payload expectations."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Lease Management (72h lifecycle, validation, eviction)",
+        "description": "Provide exclusive access leases with 72h default, validation, expiration reminders, and admin eviction hooks.",
+        "details": "- Files: `src/lease-management/{lease.ts,expiration.ts,eviction.ts,scope.ts,index.ts}`.\n- `createLease(repoId,userId,baseCommit,scope,duration=72h)` validates base commit via git-data; generates ULID; writes to DB (Task 8) or temp JSONL index for dev; returns Lease.\n- `validateLease(leaseId,userId)` checks existence, ownership, status, remaining time; returns scope.\n- `scope.ts` sparse/full handling (Phase 1: full only, but implement structure for sparse later).\n- `checkExpiration()` scans leases and emits reminders 2h before expiry; expiration marks status.\n- `evictLease(leaseId,adminId,reason)` transitions status to evicted and records audit entry.\n- Prevent overlapping active leases on same repo for full scope.\n- Pseudo-code storage: write `leases.jsonl` under repo metadata dir with append-only writes; index by `lease_id`.",
+        "testStrategy": "- Unit: durations, reminder window logic, status transitions.\n- Integration: create lease against real repo head; validate; simulate time advance to expire; eviction path.\n- Concurrency: prevent two active leases for same repo when scope overlaps (simple full-scope exclusivity).",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define lease record schema and JSONL persistence helper",
+            "description": "Capture lease fields and persistence layout for the JSONL temp store.",
+            "dependencies": [],
+            "details": "Document lease record shape, implement append-only writer and index loader for leases.jsonl under repo metadata, and outline transition hooks for future DB integration.",
+            "status": "pending",
+            "testStrategy": "Unit tests covering append-only writes, index hydration, and ULID validation."
+          },
+          {
+            "id": 2,
+            "title": "Implement scope module with full-scope and exclusivity checks",
+            "description": "Provide scope abstraction supporting current full-scope logic and exclusivity detection.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create scope.ts with types for full and future sparse scopes, encode normalization checks, and expose helper that detects overlapping active leases for full scope.",
+            "status": "pending",
+            "testStrategy": "Unit tests for scope comparisons and exclusivity detection edge cases."
+          },
+          {
+            "id": 3,
+            "title": "Build createLease workflow with validations and persistence",
+            "description": "Implement createLease enforcing base commit validation, exclusivity, and persistence.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add createLease function that verifies repo/head via git-data, ensures no conflicting active leases, generates ULID, persists record to JSONL/index, and returns structured Lease object.",
+            "status": "pending",
+            "testStrategy": "Integration test creating lease against sample repo head plus unit coverage for validation failures."
+          },
+          {
+            "id": 4,
+            "title": "Implement validateLease API and status checks",
+            "description": "Expose validateLease to confirm ownership, status, and remaining time.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Develop validateLease to load lease by ID, verify user ownership, ensure active status and remaining duration, and return validated scope.",
+            "status": "pending",
+            "testStrategy": "Unit tests for valid lease, missing lease, expired lease, and wrong user scenarios."
+          },
+          {
+            "id": 5,
+            "title": "Create expiration scanner and reminder scheduler",
+            "description": "Handle time-based reminder emission and lease expiration transitions.",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Implement checkExpiration utility that scans stored leases, triggers reminder callbacks two hours before expiry, marks expired leases, and persists status changes atomically.",
+            "status": "pending",
+            "testStrategy": "Time-mocked unit tests for reminder window logic and expiration status updates."
+          },
+          {
+            "id": 6,
+            "title": "Implement eviction workflow with audit logging hooks",
+            "description": "Enable admin-triggered eviction and audit trail recording.",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Add evictLease to update lease status, record admin ID and reason, emit audit event hook, and persist mutation to JSONL store pending DB integration.",
+            "status": "pending",
+            "testStrategy": "Unit tests verifying status transition, audit payload composition, and idempotent repeated evictions."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Database Layer (SQLite dev, PostgreSQL ready)",
+        "description": "Define schema and minimal data access layer for projects, repositories, leases, audit log, and object metadata with SQLite in dev/test and Postgres compatibility.",
+        "details": "- Create `src/shared/db.ts` simple query wrapper using `bun:sqlite` for dev; abstract interface for swapping to `pg` in prod.\n- Migrations under `scripts/migrations/*.sql` for tables: Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, RepositoryRelationships.\n- Provide DAO modules in respective folders or `shared/dao/*` (e.g., `projectsDao.ts`, `leasesDao.ts`).\n- Ensure ULID formats validated on insert; unique constraints for ids; foreign keys as per PRD.\n- Wire lease-management to DB instead of JSONL once available.\n- Add `scripts/db-migrate.ts` runner to apply pending migrations.",
+        "testStrategy": "- Unit: schema validators; DAO CRUD operations on in-memory SQLite.\n- Integration: migration runner applies cleanly; foreign key constraints enforced; simple query roundtrip.\n- Performance sanity: indices used for lookups (explain analyze basic queries).",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design relational schema and constraints for core entities (SQLite/Postgres compatible)",
+            "description": "Draft the database schema for Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, and RepositoryRelationships with clear keys and constraints.",
+            "dependencies": [],
+            "details": "Produce a concise schema spec (columns, types, PK/FK, unique indexes, CHECKs) ensuring ULID (26-char Crockford base32) validation, immutable repository_id, and PRD-aligned relationships. Define created_at/updated_at timestamps, ON DELETE/UPDATE policies, and necessary lookup indexes. Note SQLite vs Postgres type affinities and plan triggers for updated_at in SQLite to mirror Postgres behavior.",
+            "status": "pending",
+            "testStrategy": "Peer review plus dry-run DDL in SQLite to validate FK and CHECK logic; capture open items for PG parity."
+          },
+          {
+            "id": 2,
+            "title": "Author initial SQL migrations under scripts/migrations/*.sql for all tables and indices",
+            "description": "Write forward-only migration files that create tables, constraints, and indices in the correct dependency order.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create 0001_init.sql to enable PRAGMA foreign_keys=ON (SQLite), create tables (Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, RepositoryRelationships), add unique constraints (ids, name scoping where needed), FK references per PRD, and ULID CHECK constraints using GLOB/LIKE patterns. Include supporting indices for frequent lookups (by repository_id, project_id, lease status, object oid). Add a schema_migrations table for tracking applied migrations.",
+            "status": "pending",
+            "testStrategy": "Execute against in-memory SQLite and verify tables exist, FK/CHECK constraints work, and indices are created; validate reapplication is idempotent via schema_migrations."
+          },
+          {
+            "id": 3,
+            "title": "Define DB interface and configuration shim for pluggable drivers (sqlite, pg)",
+            "description": "Create a lightweight TypeScript interface for DB operations and an environment-driven driver selection mechanism.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add src/shared/db.ts with a DbClient interface (query, execute, transaction, prepare, close) and a factory using env (DB_DRIVER=sqlite|pg). Standardize parameter style via a small placeholder mapper (named params to positional), and define typed result helpers. Keep SQL neutral to ease PG adoption later.",
+            "status": "pending",
+            "testStrategy": "Unit test placeholder mapping and interface behavior using a mocked adapter; verify transaction wrapper signatures and error propagation."
+          },
+          {
+            "id": 4,
+            "title": "Implement SQLite adapter using bun:sqlite with safe queries and transactions",
+            "description": "Provide a production-ready dev/test SQLite driver that implements the DbClient interface and enables FK support.",
+            "dependencies": [
+              3
+            ],
+            "details": "Add src/shared/db-sqlite.ts implementing DbClient with bun:sqlite. Enable PRAGMA foreign_keys=ON, WAL mode, and appropriate synchronous. Support prepared statements, bound parameters, and transaction(fn) with rollback on error. Ensure type conversions (dates as ISO strings) and expose a single shared connection with clean shutdown.",
+            "status": "pending",
+            "testStrategy": "Integration tests executing simple CRUD and multi-statement transactions with intentional failures to confirm rollbacks; verify PRAGMA settings are active."
+          },
+          {
+            "id": 5,
+            "title": "Create DAO modules for core entities with ULID validation and lease semantics",
+            "description": "Implement typed DAO modules for Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, and RepositoryRelationships.",
+            "dependencies": [
+              2,
+              4,
+              3
+            ],
+            "details": "Add src/shared/dao/{projectsDao.ts,repositoriesDao.ts,leasesDao.ts,auditDao.ts,objectMetadataDao.ts,mirrorsDao.ts,repositoryRelationshipsDao.ts}. Implement CRUD and list/find operations using DbClient. Enforce ULID format on insert/update, ensure unique/foreign key invariants, and implement lease acquisition/release with conflict detection (single-writer semantics, 72h duration, no auto-renew). Append audit entries transactionally with related mutations.",
+            "status": "pending",
+            "testStrategy": "Unit tests for each DAO: happy-path CRUD, ULID validation failures, unique constraint violations, FK enforcement, and lease conflict cases including eviction semantics."
+          },
+          {
+            "id": 6,
+            "title": "Build migration runner script scripts/db-migrate.ts with idempotent apply logic",
+            "description": "Create a CLI script to discover, order, and apply pending migrations while recording state.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Implement a Bun-based runner that reads scripts/migrations/*.sql in lexical order, wraps each file in a transaction, applies only missing migrations based on schema_migrations, and logs progress. Provide options for dry-run and target migration. Ensure it works with the DbClient abstraction and can later be reused by a PG adapter.",
+            "status": "pending",
+            "testStrategy": "Integration test with a temp SQLite DB: first run applies all migrations, second run is a no-op, partial application via target flag works, and failure rolls back a single migration cleanly."
+          },
+          {
+            "id": 7,
+            "title": "Add comprehensive tests: migrations, constraints, DAO CRUD, and basic performance checks",
+            "description": "Establish unit and integration tests validating schema integrity, DAO behavior, and index usage for common queries.",
+            "dependencies": [
+              2,
+              4,
+              5,
+              6
+            ],
+            "details": "Use Vitest with in-memory SQLite. Tests: migration runner applies cleanly; PRAGMA foreign_keys enforced; ULID checks reject bad ids; FK/unique constraints enforced; DAO CRUD roundtrips; lease lifecycle and conflict rules; audit logging append-only behavior. Run EXPLAIN QUERY PLAN on representative queries to confirm index usage and add or adjust indices as needed.",
+            "status": "pending",
+            "testStrategy": "Automated Vitest suite covering unit (validators, placeholder mapping) and integration (migrations + DAOs). Include EXPLAIN assertions for indexed lookups and timing thresholds as sanity checks."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Conflict Resolution (Detection, Auto-Rebase, Deletions)",
+        "description": "Implement stale base detection, auto-rebase strategy on check-in, LFS conflict handling, and explicit deletion confirmations.",
+        "details": "- Files: `src/conflict-resolution/{detection.ts,rebase.ts,lfs-conflicts.ts,deletions.ts,index.ts}`.\n- `detectStaleBase(base, head)` compares commits using `git merge-base` and detects divergence.\n- `autoRebase(base, changes, head)` creates a worktree, applies patch set, runs `git rebase --rebase-merges` or `git cherry-pick` sequence; returns commit or conflicts summary.\n- `resolveLfsConflict(filePath, ours, theirs, choice)` handles pointer-level resolution (choose ours/theirs; `keep-both` with rename).\n- `confirmDeletions(scope, uploaded, base)` computes deletes within scope and returns pending list for explicit confirmation per PRD.\n- Ensure normalization checks during patch apply and case-collision prevention via identity functions.",
+        "testStrategy": "- Integration: create diverging branches; run detection; simulate check-in applying changes; verify auto-rebase success and conflict capture.\n- Unit: deletions confirmation logic; LFS pointer conflict test cases; normalization-induced collisions rejected.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scaffold conflict-resolution module, shared types, and Git command wrapper",
+            "description": "Create initial module structure and shared contracts for conflict resolution.",
+            "dependencies": [],
+            "details": "Add files under src/conflict-resolution/{detection.ts,rebase.ts,lfs-conflicts.ts,deletions.ts,index.ts}. Define shared types (CommitRef, PatchSet, ConflictSummary, DeletionRecord). Implement a minimal Git command wrapper (spawn-based) with safe env, timeouts, and structured stderr parsing. Export all symbols from index.ts and wire placeholder functions with clear TODOs.",
+            "status": "pending",
+            "testStrategy": "TypeScript build passes; smoke tests for Git wrapper to execute 'git --version' and simple 'rev-parse' in a temp repo."
+          },
+          {
+            "id": 2,
+            "title": "Implement stale base detection using git merge-base and divergence analysis",
+            "description": "Build detectStaleBase(base, head) to detect divergence and staleness.",
+            "dependencies": [
+              1
+            ],
+            "details": "Use 'git merge-base --fork-point' fallback to 'git merge-base' to compute the common ancestor. Compare OIDs to classify states: in-sync, head-ahead, base-ahead, or diverged. Return a structured result with booleans and OIDs for base, head, ancestor, and distances (commit counts) via 'git rev-list --count'. Handle missing refs and detached HEADs gracefully.",
+            "status": "pending",
+            "testStrategy": "Integration: create temp repo with main and feature branches; test in-sync, ahead/behind, and true divergence. Verify returned fields and counts match 'git log' ground truth."
+          },
+          {
+            "id": 3,
+            "title": "Add NFC path normalization and case-collision safeguards for patch application",
+            "description": "Provide normalization and collision guards used by all operations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement helpers that normalize all paths to NFC and reject normalization-only variants. Build case-collision detection that blocks sibling paths differing only by case using a normalized lowercase map. Integrate these guards into patch preparation utilities used by rebase/cherry-pick and deletions. Leverage identity module functions where available.",
+            "status": "pending",
+            "testStrategy": "Unit: vectors with NFD→NFC transformations, mixed-case siblings, and Unicode lookalikes. Negative tests ensure patch application rejects collisions and normalization-only changes."
+          },
+          {
+            "id": 4,
+            "title": "Implement autoRebase with worktree, rebase-merges, cherry-pick fallback, and patch application",
+            "description": "Create autoRebase(base, changes, head) with safe worktree handling.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Create a temporary worktree at a safe path, checkout 'head', apply normalized PatchSet with atomic writes, then attempt 'git rebase --rebase-merges base'. On rebase failure or unsuitable topology, fallback to sequential 'git cherry-pick' of synthetic commits representing the patch set. Detect conflicts, collect paths (including LFS pointers), and return either the resulting commit OID or a ConflictSummary. Ensure robust cleanup, lock usage, and fsync of updated files.",
+            "status": "pending",
+            "testStrategy": "Integration: simulate divergent branches with edits, renames, and merges. Verify successful rebase path and cherry-pick fallback, conflict surfacing, and worktree cleanup even on failures."
+          },
+          {
+            "id": 5,
+            "title": "Implement LFS conflict resolution (ours/theirs/keep-both with safe rename)",
+            "description": "Build resolveLfsConflict to operate on pointer files safely.",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Implement resolveLfsConflict(filePath, ours, theirs, choice) that inspects LFS pointer files, validates pointer format, and applies the selected strategy: take-ours, take-theirs, or keep-both (write chosen pointer to original path and rename the other with a disambiguated, normalized suffix). Ensure names pass normalization/collision guards and update the index accordingly. Return updated paths and resolution metadata.",
+            "status": "pending",
+            "testStrategy": "Unit: craft valid/invalid pointer contents; verify chosen pointer ends up in the correct path, keep-both uses normalized unique names, and index updates succeed. Integration: inject during autoRebase conflicts and ensure resolution completes."
+          },
+          {
+            "id": 6,
+            "title": "Implement deletion confirmation logic within scoped check-in per PRD",
+            "description": "Create confirmDeletions(scope, uploaded, base) with explicit approvals.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Compute candidate deletions by diffing 'base' tree against 'uploaded' manifest limited to the lease scope. Exclude files outside scope and transient artifacts. Normalize all paths and reject case-only differences. Return a list of DeletionRecord entries requiring explicit user confirmation flags. Include safeguards for LFS pointers vs actual content and ensure idempotency when confirmations are re-sent.",
+            "status": "pending",
+            "testStrategy": "Unit: construct small virtual trees with in-scope and out-of-scope removals; verify only intended deletions are reported. Edge cases: directory deletions, case-only paths, and normalization-induced duplicates."
+          },
+          {
+            "id": 7,
+            "title": "End-to-end and unit test suite for detection, auto-rebase, LFS conflicts, and deletions",
+            "description": "Deliver comprehensive tests and fixtures covering expected behaviors and edge cases.",
+            "dependencies": [
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "details": "Assemble test harness using temporary repositories and worktrees. Cover stale-base detection scenarios, successful and conflicted autoRebase runs, pointer-level LFS conflict resolutions including keep-both renames, and deletion confirmation semantics with normalization/collision safeguards. Add logs/telemetry assertions for auditability and ensure deterministic cleanup of temp resources.",
+            "status": "pending",
+            "testStrategy": "Integration: scripted repo setups exercising each flow; assert commit graphs and filesystem outcomes. Unit: fine-grained checks for normalization/collision helpers and deletion selection. Run under CI with isolated temp dirs."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "HTTP API Server (H3/Nitro) with Projects/Leases Routes",
+        "description": "Expose programmatic access endpoints for projects and leases, orchestrating core modules for end-to-end workflows and health checks.",
+        "details": "- Files: `src/api/{server.ts,index.ts,routes/{projects.ts,leases.ts,health.ts},middleware/{auth.ts,validation.ts,error.ts}}`.\n- Use Nitro/H3 on Bun (or H3 standalone) to implement REST endpoints:\n  - POST `/projects` create project (init git repo, metadata, optional template)\n  - POST `/projects/:id/media` upload media (route to LFS if policy triggers)\n  - POST `/leases` check-out (create lease)\n  - POST `/leases/:id/check-in` check-in with changes (uses conflict-resolution)\n  - GET `/health` returns status\n- Middleware: auth stub, request validation (zod schemas), error handling mapping shared errors to HTTP.\n- Stream uploads; write to worktree; auto-commit with attribution.\n- Pseudo-code check-in: validate lease → create worktree at base → apply uploaded changes → run policy to generate pointers → auto-rebase onto HEAD → update refs → close lease and write audit entry.",
+        "testStrategy": "- E2E (Playwright APIRequest): create project → upload media → create lease → check-in changes → retrieve project details.\n- Integration: auth middleware bypass dev; request validation rejects invalid payloads; error middleware wraps 4xx/5xx consistently.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scaffold H3 server bootstrap and index entrypoints",
+            "description": "Create the base HTTP server with H3 on Bun (or H3 standalone) and wire core app lifecycle.",
+            "dependencies": [],
+            "details": "Add `src/api/server.ts` exposing `createApp()` and `start()`, and `src/api/index.ts` to run the server. Configure router, body limits, CORS (dev), and register middleware placeholders and routes registry.",
+            "status": "pending",
+            "testStrategy": "Unit: start app in-memory and GET /health (stub) returns 200 JSON."
+          },
+          {
+            "id": 2,
+            "title": "Define Zod request/response schemas and types",
+            "description": "Model all API payloads and params for projects and leases routes using Zod.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create `src/api/middleware/validation.ts` with reusable `validateBody`, `validateParams`, and Zod schemas for POST /projects, POST /projects/:id/media, POST /leases, POST /leases/:id/check-in. Export typed helpers to attach parsed data to event context.",
+            "status": "pending",
+            "testStrategy": "Unit: invalid payloads rejected with 400; valid payloads pass through and attach typed data."
+          },
+          {
+            "id": 3,
+            "title": "Implement auth middleware stub with context injection",
+            "description": "Add minimal auth that parses Authorization header and injects identity into context.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create `src/api/middleware/auth.ts` to parse bearer tokens (dev bypass), derive `userId` and `spaceId`, and attach to H3 event context. Include dev toggle to allow anonymous in test/local.",
+            "status": "pending",
+            "testStrategy": "Integration: requests with/without header set context correctly; unauthorized paths return 401 when dev bypass disabled."
+          },
+          {
+            "id": 4,
+            "title": "Centralized error handling and domain error mapping",
+            "description": "Normalize errors to HTTP with consistent JSON shape and map shared errors.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add `src/api/middleware/error.ts` capturing thrown errors and mapping domain codes (e.g., ValidationError, NotFound, Conflict, LeaseExpired) to HTTP status. Include correlation id, message, code, and details in response.",
+            "status": "pending",
+            "testStrategy": "Unit: simulate thrown domain errors and verify HTTP status and JSON structure; unknown errors return 500."
+          },
+          {
+            "id": 5,
+            "title": "Health route with dependency probes",
+            "description": "Expose GET /health reporting liveness and basic readiness checks.",
+            "dependencies": [
+              1,
+              4
+            ],
+            "details": "Create `src/api/routes/health.ts` with GET `/health` returning uptime, version, and lightweight probes (optional stubs) for DB, Git storage reachability, and object storage. Ensure fast path and no heavy I/O.",
+            "status": "pending",
+            "testStrategy": "Integration: GET /health returns 200 with status:true; simulate a failed probe returns degraded:false with 200."
+          },
+          {
+            "id": 6,
+            "title": "Projects create route integrating lifecycle module",
+            "description": "Implement POST /projects to initialize repo, metadata, and optional template application.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Add `src/api/routes/projects.ts` handler for POST `/projects` calling `projects.createProject(...)`, shaping response with ids, default branch, and metadata. Enforce Zod body, auth context, and map domain errors via error middleware.",
+            "status": "pending",
+            "testStrategy": "Integration: valid body returns 201 with ULID and repo info; invalid schema 400; simulated lifecycle failure mapped to 5xx."
+          },
+          {
+            "id": 7,
+            "title": "Media upload streaming with LFS policy and commit",
+            "description": "Implement POST /projects/:id/media handling streamed uploads, LFS routing, and auto-commit.",
+            "dependencies": [
+              6,
+              2,
+              3,
+              4
+            ],
+            "details": "Extend `src/api/routes/projects.ts` with POST `/projects/:id/media` using streaming/multipart parsing. Write to worktree, evaluate LFS policy for >10MB/extensions, store pointers, and commit with author from auth context. Return per-file results.",
+            "status": "pending",
+            "testStrategy": "Integration: upload small and >10MB test files; assert pointer creation for large files and a commit recorded; invalid project id => 404."
+          },
+          {
+            "id": 8,
+            "title": "Leases checkout route to open work scope",
+            "description": "Implement POST /leases to create a lease and prepare an ephemeral worktree.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create `src/api/routes/leases.ts` handler for POST `/leases` that validates scope, calls lease manager to open a lease, prepares a base worktree at ref/commit, and returns lease id, base commit, and scope metadata.",
+            "status": "pending",
+            "testStrategy": "Integration: returns 201 with lease id and base; invalid scope 400; conflicting open lease mapped to 409."
+          },
+          {
+            "id": 9,
+            "title": "Check-in orchestration with conflict resolution and audit",
+            "description": "Implement POST /leases/:id/check-in applying streamed changes, policy, rebase, and close lease.",
+            "dependencies": [
+              8,
+              2,
+              3,
+              4
+            ],
+            "details": "In `src/api/routes/leases.ts`, add POST `/leases/:id/check-in`: validate lease, materialize worktree at base, apply uploaded changes, run LFS policy to generate pointers, auto-rebase onto HEAD, resolve conflicts per policy, update refs, close lease, and write audit entry.",
+            "status": "pending",
+            "testStrategy": "E2E-like integration: open lease, push changes, simulate concurrent commit to trigger rebase; verify conflicts surfaced as 409 with details and successful path returns 200 with new commit id."
+          },
+          {
+            "id": 10,
+            "title": "End-to-end and middleware tests for API workflows",
+            "description": "Add E2E and integration tests covering happy paths and failures across routes.",
+            "dependencies": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "details": "Use Playwright APIRequest or fetch-based harness to test: create project → upload media → create lease → check-in changes → fetch project details (if exposed) and health. Add middleware tests for auth bypass, validation failures, and error mapping consistency.",
+            "status": "pending",
+            "testStrategy": "E2E: full workflow returns expected statuses and payloads; Integration: middleware behaviors and schema enforcement; Negative cases: invalid payloads, missing auth, and simulated domain errors."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-11-05T15:49:40.627Z",
+      "updated": "2025-11-05T15:49:40.628Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

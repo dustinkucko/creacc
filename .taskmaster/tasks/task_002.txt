@@ -1,0 +1,60 @@
+# Task ID: 2
+# Title: Implement Identity Primitives (Dual OID, ULID, Path Normalization)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Provide canonical identity utilities including dual SHA-1/SHA-256 computation, ULID generation/validation, Unicode NFC normalization, and case-collision detection.
+# Details:
+- Files: `src/identity/{hashing.ts,ulid.ts,normalization.ts,case-collision.ts,yaml-validation.ts,index.ts}`.
+- `computeDualOid(type,size,content)` builds canonical git object header `${type} ${size}\0` and hashes using Node/Bun `crypto.createHash('sha1'|'sha256')` over header+content.
+- `generateUlid(ts?)` using `ulid` lib; validators for ULID (26 chars Crockford base32) and UUID v7 if later.
+- `normalizePath(p)` using `Intl`/`String.prototype.normalize('NFC')`; detect changes.
+- `detectCaseCollision(tree,newPath)` tree = Set of existing normalized casefolded paths (use `toLocaleLowerCase('en-US')`); return conflicting path if any.
+- `validateYaml(yaml)` using `yaml` lib; return parsed + schema placeholders.
+- Export all via `index.ts`.
+- Pseudo-code hashing:
+  - `const header = Buffer.from(type + ' ' + size + '\0','utf8');`
+  - `const buf = Buffer.concat([header, contentBuf]);`
+  - return { sha1: sha1(buf), sha256: sha256(buf) }
+
+# Test Strategy:
+- Unit tests: known vectors from Git docs: hash small blob 'hello\n' matches both SHA-1 and SHA-256 when wrapped in git header; normalization cases (NFD→NFC) and case-collision detection; ULID format validation; YAML parse/invalid cases.
+- Cross-check against `git hash-object --stdin -t blob` for SHA-1 in integration.
+
+# Subtasks:
+## 1. Establish identity module structure [pending]
+### Dependencies: None
+### Description: Review specs and create initial identity utility file skeletons with shared types.
+### Details:
+Confirm required files under src/identity, define shared interfaces, and document expected exports to align with architecture guidance.
+
+## 2. Implement dual Git OID hashing utility [pending]
+### Dependencies: 2.1
+### Description: Build computeDualOid to construct git headers and output SHA-1 and SHA-256 hashes.
+### Details:
+Use Node crypto hashes over header+content buffers, validate inputs, and ensure outputs match canonical git formatting requirements.
+
+## 3. Add ULID generation and validation helpers [pending]
+### Dependencies: 2.1
+### Description: Introduce helpers to create and verify ULIDs per product conventions.
+### Details:
+Leverage ulid library, expose optional timestamp parameter, implement regex validation, and provide clear error reporting for invalid identifiers.
+
+## 4. Implement path normalization and case collision checks [pending]
+### Dependencies: 2.1
+### Description: Provide NFC normalization and case-insensitive collision detection utilities.
+### Details:
+Normalize paths via String.normalize('NFC'), expose change detection flag, and compare locale-lowered paths against existing tree set to surface conflicts.
+
+## 5. Create YAML validation helper [pending]
+### Dependencies: 2.1
+### Description: Parse YAML configurations and return typed results with placeholder schema checks.
+### Details:
+Use yaml library to parse input, wrap errors with context, and set up structure for future schema validation hooks.
+
+## 6. Wire exports and author comprehensive tests [pending]
+### Dependencies: 2.2, 2.3, 2.4, 2.5
+### Description: Aggregate identity utilities in index.ts and add unit tests covering all behaviors.
+### Details:
+Export modules via index.ts, implement full test suite referencing documented vectors, and ensure shared fixtures verify interactions across utilities.
+

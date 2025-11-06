@@ -1,0 +1,77 @@
+# Task ID: 4
+# Title: Git Data Core (Repository, Objects, Refs, Worktree)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implement minimal Git plumbing to init bare repositories, store git objects with dual hashes, manage refs/reflogs, and create ephemeral worktrees.
+# Details:
+- Files: `src/git-data/{repository.ts,objects.ts,refs.ts,worktree.ts,validation.ts,index.ts}`.
+- Prefer native `git` CLI for canonical behavior in integration; wrap with Bun `spawn` or `execa` when needed; for unit-level hashing use identity.computeDualOid.
+- `initRepository(spaceId, repoName, repoConfig)`:
+  - Create directory `/srv/git/<space>/<ulid>.git` (bare) using storage adapter.
+  - Run `git init --bare --object-format=sha1` for repo; record config to support SHA-256 transition and `extensions.objectFormat` for dual-hash validation (store both via our index).
+  - Write default branch `main`.
+- `storeObject(type,content)`:
+  - Compute dual OIDs; for canonical storage use `git hash-object -w -t <type>` for sha1; store sha256 in side-index DB/file under `objects/sha256-index` mapping sha1↔sha256.
+- `updateRef(refName, oldOid, newOid, committer)`:
+  - Use `git update-ref` with `oldOid` optimistic concurrency; append reflog entry.
+- `createWorktree(repoPath, baseCommit, scope)`:
+  - Create temp working dir, run `git --git-dir=<repo>.git worktree add --detach <path> <baseCommit>`.
+- `validation.ts`:
+  - Helpers wrapping `git fsck`, object format checks, ensure dual-oid index consistency.
+- Index exports functions.
+- Pseudo-code for storeObject: compute dual → write via CLI → persist `ObjectMetadata` record in a local JSONL index for now (until DB task).
+
+# Test Strategy:
+- Integration: init repo, assert bare repo exists; `git fsck` clean; store blob/tree/commit and verify oids; update ref with correct oldOid success and wrong oldOid fails; create worktree and confirm HEAD at base.
+- Unit: object header construction edge cases.
+
+# Subtasks:
+## 1. Review Git data requirements and storage contracts [pending]
+### Dependencies: None
+### Description: Read AGENTS.md, PRD §11-14, architecture.md, and storage adapter APIs to confirm Git data expectations.
+### Details:
+Collect authoritative requirements on dual hashes, storage layout, NFC enforcement, and CLI usage to drive implementation choices.
+
+## 2. Design git-data module structure and shared utilities [pending]
+### Dependencies: 4.1
+### Description: Sketch module responsibilities, input/output types, and shared utilities across repository, objects, refs, worktree, and validation files.
+### Details:
+Define TypeScript interfaces, storage adapter hooks, error enums, logging strategy, and cross-module helpers prior to coding implementations.
+
+## 3. Implement initRepository with dual-hash aware config [pending]
+### Dependencies: 4.2
+### Description: Create repository.ts logic to provision bare repos under /srv/git/<space>/<ulid>.git via storage adapter and configure dual-hash support.
+### Details:
+Invoke git init --bare, enforce main branch default, persist repo metadata, and prep future SHA-256 transition settings in index exports.
+
+## 4. Build storeObject with dual OID persistence [pending]
+### Dependencies: 4.2, 4.3
+### Description: Implement objects.ts storeObject using computeDualOid, git hash-object, and sidecar JSONL index for sha1↔sha256 mapping.
+### Details:
+Handle supported object types, ensure atomic writes, maintain ObjectMetadata records, and expose retrieval helpers for later features.
+
+## 5. Implement ref updates and reflog handling [pending]
+### Dependencies: 4.3, 4.4
+### Description: Add updateRef and supporting utilities in refs.ts to enforce optimistic concurrency and append reflog entries with committer info.
+### Details:
+Wrap git update-ref, manage oldOid checks, format reflog messages, and surface errors for mismatched OIDs or missing refs.
+
+## 6. Create ephemeral worktree management [pending]
+### Dependencies: 4.3, 4.4, 4.5
+### Description: Develop worktree.ts to create and clean up detached worktrees for check-out flows based on base commits and scope.
+### Details:
+Generate temp directories, call git worktree add --detach, record metadata for later cleanup, and ensure compatibility with storage rules.
+
+## 7. Add validation helpers for repositories and objects [pending]
+### Dependencies: 4.4, 4.5, 4.6
+### Description: Implement validation.ts to wrap git fsck, verify object formats, and cross-check dual-hash index integrity.
+### Details:
+Provide functions for health checks, index reconciliation, and reporting detailed validation results for auditing pipelines.
+
+## 8. Wire index exports and author tests [pending]
+### Dependencies: 4.3, 4.4, 4.5, 4.6, 4.7
+### Description: Finalize index.ts exports and create comprehensive unit/integration tests covering repository, objects, refs, worktree, and validation paths.
+### Details:
+Ensure modules export planned APIs, add unit tests for hashing edge cases, and script integration suites invoking git CLI behaviors.
+

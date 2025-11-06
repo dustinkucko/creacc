@@ -1,0 +1,62 @@
+# Task ID: 8
+# Title: Database Layer (SQLite dev, PostgreSQL ready)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Define schema and minimal data access layer for projects, repositories, leases, audit log, and object metadata with SQLite in dev/test and Postgres compatibility.
+# Details:
+- Create `src/shared/db.ts` simple query wrapper using `bun:sqlite` for dev; abstract interface for swapping to `pg` in prod.
+- Migrations under `scripts/migrations/*.sql` for tables: Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, RepositoryRelationships.
+- Provide DAO modules in respective folders or `shared/dao/*` (e.g., `projectsDao.ts`, `leasesDao.ts`).
+- Ensure ULID formats validated on insert; unique constraints for ids; foreign keys as per PRD.
+- Wire lease-management to DB instead of JSONL once available.
+- Add `scripts/db-migrate.ts` runner to apply pending migrations.
+
+# Test Strategy:
+- Unit: schema validators; DAO CRUD operations on in-memory SQLite.
+- Integration: migration runner applies cleanly; foreign key constraints enforced; simple query roundtrip.
+- Performance sanity: indices used for lookups (explain analyze basic queries).
+
+# Subtasks:
+## 1. Design relational schema and constraints for core entities (SQLite/Postgres compatible) [pending]
+### Dependencies: None
+### Description: Draft the database schema for Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, and RepositoryRelationships with clear keys and constraints.
+### Details:
+Produce a concise schema spec (columns, types, PK/FK, unique indexes, CHECKs) ensuring ULID (26-char Crockford base32) validation, immutable repository_id, and PRD-aligned relationships. Define created_at/updated_at timestamps, ON DELETE/UPDATE policies, and necessary lookup indexes. Note SQLite vs Postgres type affinities and plan triggers for updated_at in SQLite to mirror Postgres behavior.
+
+## 2. Author initial SQL migrations under scripts/migrations/*.sql for all tables and indices [pending]
+### Dependencies: 8.1
+### Description: Write forward-only migration files that create tables, constraints, and indices in the correct dependency order.
+### Details:
+Create 0001_init.sql to enable PRAGMA foreign_keys=ON (SQLite), create tables (Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, RepositoryRelationships), add unique constraints (ids, name scoping where needed), FK references per PRD, and ULID CHECK constraints using GLOB/LIKE patterns. Include supporting indices for frequent lookups (by repository_id, project_id, lease status, object oid). Add a schema_migrations table for tracking applied migrations.
+
+## 3. Define DB interface and configuration shim for pluggable drivers (sqlite, pg) [pending]
+### Dependencies: 8.1
+### Description: Create a lightweight TypeScript interface for DB operations and an environment-driven driver selection mechanism.
+### Details:
+Add src/shared/db.ts with a DbClient interface (query, execute, transaction, prepare, close) and a factory using env (DB_DRIVER=sqlite|pg). Standardize parameter style via a small placeholder mapper (named params to positional), and define typed result helpers. Keep SQL neutral to ease PG adoption later.
+
+## 4. Implement SQLite adapter using bun:sqlite with safe queries and transactions [pending]
+### Dependencies: 8.3
+### Description: Provide a production-ready dev/test SQLite driver that implements the DbClient interface and enables FK support.
+### Details:
+Add src/shared/db-sqlite.ts implementing DbClient with bun:sqlite. Enable PRAGMA foreign_keys=ON, WAL mode, and appropriate synchronous. Support prepared statements, bound parameters, and transaction(fn) with rollback on error. Ensure type conversions (dates as ISO strings) and expose a single shared connection with clean shutdown.
+
+## 5. Create DAO modules for core entities with ULID validation and lease semantics [pending]
+### Dependencies: 8.2, 8.4, 8.3
+### Description: Implement typed DAO modules for Projects, Repositories, Leases, AuditEntries, ObjectMetadata, Mirrors, and RepositoryRelationships.
+### Details:
+Add src/shared/dao/{projectsDao.ts,repositoriesDao.ts,leasesDao.ts,auditDao.ts,objectMetadataDao.ts,mirrorsDao.ts,repositoryRelationshipsDao.ts}. Implement CRUD and list/find operations using DbClient. Enforce ULID format on insert/update, ensure unique/foreign key invariants, and implement lease acquisition/release with conflict detection (single-writer semantics, 72h duration, no auto-renew). Append audit entries transactionally with related mutations.
+
+## 6. Build migration runner script scripts/db-migrate.ts with idempotent apply logic [pending]
+### Dependencies: 8.2, 8.3, 8.4
+### Description: Create a CLI script to discover, order, and apply pending migrations while recording state.
+### Details:
+Implement a Bun-based runner that reads scripts/migrations/*.sql in lexical order, wraps each file in a transaction, applies only missing migrations based on schema_migrations, and logs progress. Provide options for dry-run and target migration. Ensure it works with the DbClient abstraction and can later be reused by a PG adapter.
+
+## 7. Add comprehensive tests: migrations, constraints, DAO CRUD, and basic performance checks [pending]
+### Dependencies: 8.2, 8.4, 8.5, 8.6
+### Description: Establish unit and integration tests validating schema integrity, DAO behavior, and index usage for common queries.
+### Details:
+Use Vitest with in-memory SQLite. Tests: migration runner applies cleanly; PRAGMA foreign_keys enforced; ULID checks reject bad ids; FK/unique constraints enforced; DAO CRUD roundtrips; lease lifecycle and conflict rules; audit logging append-only behavior. Run EXPLAIN QUERY PLAN on representative queries to confirm index usage and add or adjust indices as needed.
+

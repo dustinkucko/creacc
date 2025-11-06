@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2025-11-05T15:54:42.443Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Scaffold Monorepo Structure (TypeScript + Bun)",
+			"complexityScore": 4,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down directory scaffolding, package.json setup for Bun workspaces, TypeScript/tsconfig wiring, Biome config, shared type stubs, and initial Bun/Vitest lint-test scripts.",
+			"reasoning": "Repository currently contains only documentation files, so the entire TypeScript/Bun toolchain, workspace layout, and shared stubs must be created from scratch and validated; effort is moderate but bounded to configuration and boilerplate without legacy constraints."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Identity Primitives (Dual OID, ULID, Path Normalization)",
+			"complexityScore": 6,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Enumerate steps to implement dual Git OID hashing, ULID helpers, path normalization/collision detection, YAML validation, module exports, and comprehensive unit tests using documented vectors.",
+			"reasoning": "No existing identity utilities exist, so cryptographic hashing, normalization logic, and YAML parsing must be implemented with careful adherence to Git’s header rules and Unicode handling, requiring new dependencies, validation flows, and targeted tests."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Storage Abstraction Layer",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Plan creation of the StorageAdapter interface, local filesystem implementation with atomic writes and locking, path normalization integration, configuration handling, stub adapters, and unit/integration testing strategy.",
+			"reasoning": "A full abstraction must be defined and a POSIX-compliant local adapter built around Bun/Node fs APIs, including atomic write patterns, advisory locking, and normalization hooks, all of which are absent and demand careful design plus concurrency-focused tests."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Git Data Core (Repository, Objects, Refs, Worktree)",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Lay out work to initialize bare repositories, persist dual-hash metadata, manage refs/reflogs, handle worktree creation, integrate with the storage layer, and add validation utilities plus integration tests exercising git CLI commands.",
+			"reasoning": "Implementing core Git plumbing atop the new storage adapter requires orchestrating git CLI operations, maintaining dual-hash indexes, ref integrity, and worktree lifecycle without existing helpers, demanding sophisticated integration logic and extensive validation coverage."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Projects Lifecycle Module",
+			"complexityScore": 8,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Detail steps for project creation, metadata validation, template application, media upload orchestration with LFS policy checks, committing workflows, ULID enforcement, and accompanying tests across git-data and lfs-data integrations.",
+			"reasoning": "Project lifecycle orchestration depends on several yet-to-be-built modules (identity, git-data, storage, LFS) and must coordinate repository creation, metadata commits, templates, and uploads while enforcing PRD rules, resulting in high integration complexity and testing overhead."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "LFS Data Primitives (Pointer, Upload/Download, Policy)",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Outline implementing LFS pointer generation/parsing, upload/download URL stubs, tracking policy logic, locking placeholders, module exports, and unit tests aligned with Git LFS specs.",
+			"reasoning": "Although focused, this task touches multiple concerns—pointer formatting, policy decisions, and stubbed transfer flows—with no prior LFS utilities to lean on, requiring new modules, configuration, and validation to meet spec expectations."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Lease Management (72h lifecycle, validation, eviction)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Plan lease creation/validation APIs, time-based expiration scanning, reminder scheduling, eviction handling, persistence layer integration, exclusivity enforcement, and related tests.",
+			"reasoning": "Lease workflows must coordinate with git-data for commit validation, enforce timing and exclusivity rules, manage reminder/expiration logic, and persist state (initially JSONL or future DB), introducing concurrency and temporal concerns without existing scaffolding."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Database Layer (SQLite dev, PostgreSQL ready)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Break down schema design, migration files, Bun SQLite wrapper, DAO implementations, Postgres-compat abstraction, migration runner, and test coverage for constraints and CRUD operations.",
+			"reasoning": "No database layer is present, so designing schema, migrations, dual-environment abstraction, and data access utilities requires significant new infrastructure plus rigorous testing for constraints and compatibility with later Postgres adoption."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Conflict Resolution (Detection, Auto-Rebase, Deletions)",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Enumerate work for stale-base detection, automated rebase/cherry-pick flows, LFS conflict resolution strategies, deletion confirmation logic, normalization safeguards, and integration/unit tests.",
+			"reasoning": "Implementing automated rebase flows and conflict handling over git worktrees is intricate, relying on earlier identity/storage/git modules and requiring robust error handling, edge-case logic, and heavy integration testing to ensure safe check-in behavior."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "HTTP API Server (H3/Nitro) with Projects/Leases Routes",
+			"complexityScore": 9,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Detail building the H3 server, auth/validation/error middleware, project/lease route handlers, streaming upload handling, check-in orchestration with conflict resolution, response shaping, and end-to-end/API tests.",
+			"reasoning": "The API server must orchestrate nearly all prior modules (projects, leases, git-data, LFS, conflict resolution), implement middleware, handle streaming uploads, and deliver end-to-end workflows; with no existing server infrastructure, this is a high-effort, high-risk integration task requiring extensive testing."
+		}
+	]
+}

@@ -1,0 +1,61 @@
+# Task ID: 9
+# Title: Conflict Resolution (Detection, Auto-Rebase, Deletions)
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implement stale base detection, auto-rebase strategy on check-in, LFS conflict handling, and explicit deletion confirmations.
+# Details:
+- Files: `src/conflict-resolution/{detection.ts,rebase.ts,lfs-conflicts.ts,deletions.ts,index.ts}`.
+- `detectStaleBase(base, head)` compares commits using `git merge-base` and detects divergence.
+- `autoRebase(base, changes, head)` creates a worktree, applies patch set, runs `git rebase --rebase-merges` or `git cherry-pick` sequence; returns commit or conflicts summary.
+- `resolveLfsConflict(filePath, ours, theirs, choice)` handles pointer-level resolution (choose ours/theirs; `keep-both` with rename).
+- `confirmDeletions(scope, uploaded, base)` computes deletes within scope and returns pending list for explicit confirmation per PRD.
+- Ensure normalization checks during patch apply and case-collision prevention via identity functions.
+
+# Test Strategy:
+- Integration: create diverging branches; run detection; simulate check-in applying changes; verify auto-rebase success and conflict capture.
+- Unit: deletions confirmation logic; LFS pointer conflict test cases; normalization-induced collisions rejected.
+
+# Subtasks:
+## 1. Scaffold conflict-resolution module, shared types, and Git command wrapper [pending]
+### Dependencies: None
+### Description: Create initial module structure and shared contracts for conflict resolution.
+### Details:
+Add files under src/conflict-resolution/{detection.ts,rebase.ts,lfs-conflicts.ts,deletions.ts,index.ts}. Define shared types (CommitRef, PatchSet, ConflictSummary, DeletionRecord). Implement a minimal Git command wrapper (spawn-based) with safe env, timeouts, and structured stderr parsing. Export all symbols from index.ts and wire placeholder functions with clear TODOs.
+
+## 2. Implement stale base detection using git merge-base and divergence analysis [pending]
+### Dependencies: 9.1
+### Description: Build detectStaleBase(base, head) to detect divergence and staleness.
+### Details:
+Use 'git merge-base --fork-point' fallback to 'git merge-base' to compute the common ancestor. Compare OIDs to classify states: in-sync, head-ahead, base-ahead, or diverged. Return a structured result with booleans and OIDs for base, head, ancestor, and distances (commit counts) via 'git rev-list --count'. Handle missing refs and detached HEADs gracefully.
+
+## 3. Add NFC path normalization and case-collision safeguards for patch application [pending]
+### Dependencies: 9.1
+### Description: Provide normalization and collision guards used by all operations.
+### Details:
+Implement helpers that normalize all paths to NFC and reject normalization-only variants. Build case-collision detection that blocks sibling paths differing only by case using a normalized lowercase map. Integrate these guards into patch preparation utilities used by rebase/cherry-pick and deletions. Leverage identity module functions where available.
+
+## 4. Implement autoRebase with worktree, rebase-merges, cherry-pick fallback, and patch application [pending]
+### Dependencies: 9.1, 9.2, 9.3
+### Description: Create autoRebase(base, changes, head) with safe worktree handling.
+### Details:
+Create a temporary worktree at a safe path, checkout 'head', apply normalized PatchSet with atomic writes, then attempt 'git rebase --rebase-merges base'. On rebase failure or unsuitable topology, fallback to sequential 'git cherry-pick' of synthetic commits representing the patch set. Detect conflicts, collect paths (including LFS pointers), and return either the resulting commit OID or a ConflictSummary. Ensure robust cleanup, lock usage, and fsync of updated files.
+
+## 5. Implement LFS conflict resolution (ours/theirs/keep-both with safe rename) [pending]
+### Dependencies: 9.1, 9.3, 9.4
+### Description: Build resolveLfsConflict to operate on pointer files safely.
+### Details:
+Implement resolveLfsConflict(filePath, ours, theirs, choice) that inspects LFS pointer files, validates pointer format, and applies the selected strategy: take-ours, take-theirs, or keep-both (write chosen pointer to original path and rename the other with a disambiguated, normalized suffix). Ensure names pass normalization/collision guards and update the index accordingly. Return updated paths and resolution metadata.
+
+## 6. Implement deletion confirmation logic within scoped check-in per PRD [pending]
+### Dependencies: 9.1, 9.3
+### Description: Create confirmDeletions(scope, uploaded, base) with explicit approvals.
+### Details:
+Compute candidate deletions by diffing 'base' tree against 'uploaded' manifest limited to the lease scope. Exclude files outside scope and transient artifacts. Normalize all paths and reject case-only differences. Return a list of DeletionRecord entries requiring explicit user confirmation flags. Include safeguards for LFS pointers vs actual content and ensure idempotency when confirmations are re-sent.
+
+## 7. End-to-end and unit test suite for detection, auto-rebase, LFS conflicts, and deletions [pending]
+### Dependencies: 9.2, 9.3, 9.4, 9.5, 9.6
+### Description: Deliver comprehensive tests and fixtures covering expected behaviors and edge cases.
+### Details:
+Assemble test harness using temporary repositories and worktrees. Cover stale-base detection scenarios, successful and conflicted autoRebase runs, pointer-level LFS conflict resolutions including keep-both renames, and deletion confirmation semantics with normalization/collision safeguards. Add logs/telemetry assertions for auditability and ensure deterministic cleanup of temp resources.
+

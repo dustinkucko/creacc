@@ -1,0 +1,83 @@
+# Task ID: 10
+# Title: HTTP API Server (H3/Nitro) with Projects/Leases Routes
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Expose programmatic access endpoints for projects and leases, orchestrating core modules for end-to-end workflows and health checks.
+# Details:
+- Files: `src/api/{server.ts,index.ts,routes/{projects.ts,leases.ts,health.ts},middleware/{auth.ts,validation.ts,error.ts}}`.
+- Use Nitro/H3 on Bun (or H3 standalone) to implement REST endpoints:
+  - POST `/projects` create project (init git repo, metadata, optional template)
+  - POST `/projects/:id/media` upload media (route to LFS if policy triggers)
+  - POST `/leases` check-out (create lease)
+  - POST `/leases/:id/check-in` check-in with changes (uses conflict-resolution)
+  - GET `/health` returns status
+- Middleware: auth stub, request validation (zod schemas), error handling mapping shared errors to HTTP.
+- Stream uploads; write to worktree; auto-commit with attribution.
+- Pseudo-code check-in: validate lease → create worktree at base → apply uploaded changes → run policy to generate pointers → auto-rebase onto HEAD → update refs → close lease and write audit entry.
+
+# Test Strategy:
+- E2E (Playwright APIRequest): create project → upload media → create lease → check-in changes → retrieve project details.
+- Integration: auth middleware bypass dev; request validation rejects invalid payloads; error middleware wraps 4xx/5xx consistently.
+
+# Subtasks:
+## 1. Scaffold H3 server bootstrap and index entrypoints [pending]
+### Dependencies: None
+### Description: Create the base HTTP server with H3 on Bun (or H3 standalone) and wire core app lifecycle.
+### Details:
+Add `src/api/server.ts` exposing `createApp()` and `start()`, and `src/api/index.ts` to run the server. Configure router, body limits, CORS (dev), and register middleware placeholders and routes registry.
+
+## 2. Define Zod request/response schemas and types [pending]
+### Dependencies: 10.1
+### Description: Model all API payloads and params for projects and leases routes using Zod.
+### Details:
+Create `src/api/middleware/validation.ts` with reusable `validateBody`, `validateParams`, and Zod schemas for POST /projects, POST /projects/:id/media, POST /leases, POST /leases/:id/check-in. Export typed helpers to attach parsed data to event context.
+
+## 3. Implement auth middleware stub with context injection [pending]
+### Dependencies: 10.1
+### Description: Add minimal auth that parses Authorization header and injects identity into context.
+### Details:
+Create `src/api/middleware/auth.ts` to parse bearer tokens (dev bypass), derive `userId` and `spaceId`, and attach to H3 event context. Include dev toggle to allow anonymous in test/local.
+
+## 4. Centralized error handling and domain error mapping [pending]
+### Dependencies: 10.1
+### Description: Normalize errors to HTTP with consistent JSON shape and map shared errors.
+### Details:
+Add `src/api/middleware/error.ts` capturing thrown errors and mapping domain codes (e.g., ValidationError, NotFound, Conflict, LeaseExpired) to HTTP status. Include correlation id, message, code, and details in response.
+
+## 5. Health route with dependency probes [pending]
+### Dependencies: 10.1, 10.4
+### Description: Expose GET /health reporting liveness and basic readiness checks.
+### Details:
+Create `src/api/routes/health.ts` with GET `/health` returning uptime, version, and lightweight probes (optional stubs) for DB, Git storage reachability, and object storage. Ensure fast path and no heavy I/O.
+
+## 6. Projects create route integrating lifecycle module [pending]
+### Dependencies: 10.1, 10.2, 10.3, 10.4
+### Description: Implement POST /projects to initialize repo, metadata, and optional template application.
+### Details:
+Add `src/api/routes/projects.ts` handler for POST `/projects` calling `projects.createProject(...)`, shaping response with ids, default branch, and metadata. Enforce Zod body, auth context, and map domain errors via error middleware.
+
+## 7. Media upload streaming with LFS policy and commit [pending]
+### Dependencies: 10.6, 10.2, 10.3, 10.4
+### Description: Implement POST /projects/:id/media handling streamed uploads, LFS routing, and auto-commit.
+### Details:
+Extend `src/api/routes/projects.ts` with POST `/projects/:id/media` using streaming/multipart parsing. Write to worktree, evaluate LFS policy for >10MB/extensions, store pointers, and commit with author from auth context. Return per-file results.
+
+## 8. Leases checkout route to open work scope [pending]
+### Dependencies: 10.1, 10.2, 10.3, 10.4
+### Description: Implement POST /leases to create a lease and prepare an ephemeral worktree.
+### Details:
+Create `src/api/routes/leases.ts` handler for POST `/leases` that validates scope, calls lease manager to open a lease, prepares a base worktree at ref/commit, and returns lease id, base commit, and scope metadata.
+
+## 9. Check-in orchestration with conflict resolution and audit [pending]
+### Dependencies: 10.8, 10.2, 10.3, 10.4
+### Description: Implement POST /leases/:id/check-in applying streamed changes, policy, rebase, and close lease.
+### Details:
+In `src/api/routes/leases.ts`, add POST `/leases/:id/check-in`: validate lease, materialize worktree at base, apply uploaded changes, run LFS policy to generate pointers, auto-rebase onto HEAD, resolve conflicts per policy, update refs, close lease, and write audit entry.
+
+## 10. End-to-end and middleware tests for API workflows [pending]
+### Dependencies: 10.5, 10.6, 10.7, 10.8, 10.9
+### Description: Add E2E and integration tests covering happy paths and failures across routes.
+### Details:
+Use Playwright APIRequest or fetch-based harness to test: create project → upload media → create lease → check-in changes → fetch project details (if exposed) and health. Add middleware tests for auth bypass, validation failures, and error mapping consistency.
+
